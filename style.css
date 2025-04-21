@@ -1,0 +1,30 @@
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f9f9f9;
+}
+h1 {
+  color: #891628;
+}
+fieldset {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+input {
+  display: block;
+  margin: 5px 0;
+  padding: 6px;
+  width: 100%;
+}
+.producto {
+  margin-bottom: 10px;
+}
+button {
+  padding: 10px;
+  background: #891628;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
