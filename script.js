@@ -132,3 +132,86 @@ document.addEventListener('DOMContentLoaded', function () {
     doc.save('remito.pdf');
   });
 });
+document.getElementById('openModal').addEventListener('click', function(event) {
+    event.preventDefault();
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('modal').classList.add('flex');
+  });
+  document.getElementById('closeModal').addEventListener('click', function() {
+    document.getElementById('modal').classList.add('hidden');
+    document.getElementById('modal').classList.remove('flex');
+  });
+  document.getElementById('openIntroModal').addEventListener('click', function(event) {
+    event.preventDefault();
+    document.getElementById('introModal').classList.remove('hidden');
+    document.getElementById('introModal').classList.add('flex');
+  });
+  document.getElementById('closeIntroModal').addEventListener('click', function() {
+    document.getElementById('introModal').classList.add('hidden');
+    document.getElementById('introModal').classList.remove('flex');
+  });
+
+  // Mostrar/Ocultar campos opcionales
+  function toggleField(checkboxId, inputId) {
+    document.getElementById(checkboxId).addEventListener('change', function () {
+      document.getElementById(inputId).classList.toggle('hidden', !this.checked);
+    });
+  }
+  toggleField('usarCuit', 'cuitInput');
+  toggleField('usarDireccion', 'direccionInput');
+  toggleField('usarTelefono', 'telefonoInput');
+  toggleField('usarEmail', 'emailInput');
+  toggleField('usarLogo', 'logoInput');
+  toggleField('usarQR', 'qrInput');
+
+  // Productos
+  function agregarProducto() {
+    const contenedor = document.getElementById('productos');
+    const clon = contenedor.children[0].cloneNode(true);
+    clon.querySelectorAll('input').forEach(input => input.value = '');
+    clon.querySelector('button').classList.remove('hidden');
+    contenedor.appendChild(clon);
+  }
+
+  function eliminarProducto(btn) {
+    const grupo = btn.closest('.grupo-producto');
+    if (document.querySelectorAll('.grupo-producto').length > 1) grupo.remove();
+  }
+
+  // NUEVO: Procesar listado textual
+  function procesarTextoPegado() {
+    const texto = document.getElementById('entradaTexto').value.trim();
+    if (!texto) return alert("Pegá el listado primero");
+
+    const lineas = texto.split('\n');
+    for (let linea of lineas) {
+      const match = linea.match(/^(\d+)\s+(.+)\s+(\d+(\.\d{1,2})?)$/);
+      if (match) {
+        const cantidad = parseInt(match[1]);
+        const nombre = match[2].trim();
+        const precio = parseFloat(match[3]);
+
+        agregarProducto();
+        const grupo = document.querySelectorAll('.grupo-producto');
+        const ultimo = grupo[grupo.length - 1];
+        ultimo.querySelector('[name="nombre_producto[]"]').value = nombre;
+        ultimo.querySelector('[name="precio_unitario[]"]').value = precio;
+        ultimo.querySelector('[name="cantidad[]"]').value = cantidad;
+      }
+    }
+  }
+
+  // NUEVO: Lectura desde imagen
+  function leerImagenPedido() {
+    const file = document.getElementById('imagenPedido').files[0];
+    if (!file) return alert("Seleccioná una imagen primero");
+
+    Tesseract.recognize(file, 'spa', {
+      logger: m => console.log(m)
+    }).then(({ data: { text } }) => {
+      document.getElementById('textoDetectado').textContent = "Texto detectado:\n" + text;
+      document.getElementById('textoDetectado').classList.remove('hidden');
+      document.getElementById('entradaTexto').value = text;
+      alert("Texto detectado desde imagen. Ahora podés hacer clic en '📥 Procesar listado'");
+    });
+  }
